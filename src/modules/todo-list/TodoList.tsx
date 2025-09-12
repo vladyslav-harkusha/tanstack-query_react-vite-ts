@@ -3,7 +3,7 @@ import {useCreateTodo} from "./useCreateTodo.tsx";
 
 export function TodoList() {
     const { error, isLoading, todoResponse } = useTodoList();
-    const { handleCreate } = useCreateTodo();
+    const { handleCreate, isNewTodoPending } = useCreateTodo();
     
     if (isLoading) {
         return <div>Loading...</div>
@@ -19,7 +19,10 @@ export function TodoList() {
             
             <form onSubmit={handleCreate} className="flex gap-2 mb-5">
                 <input type="text" name="text" className="border-2 border-teal-500 rounded p-2"/>
-                <button className="border-2 border-teal-500 rounded p-2 cursor-pointer hover:bg-teal-200 transition duration-300">
+                <button
+                    className="border-2 border-teal-500 rounded p-2 cursor-pointer hover:bg-teal-200 transition duration-300 disabled:opacity-50"
+                    disabled={isNewTodoPending}
+                >
                     Create
                 </button>
             </form>

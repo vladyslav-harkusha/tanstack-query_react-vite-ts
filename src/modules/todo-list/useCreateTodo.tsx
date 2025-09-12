@@ -7,30 +7,36 @@ export function useCreateTodo() {
     
     const createTodoMutation = useMutation({
         mutationFn: todosApi.createTodo,
+        // onSuccess() {
+        //     queryClient.invalidateQueries({ queryKey: [todosApi.baseKey] })
+        //     // queryClient.invalidateQueries(todosApi.getTodoListQueryOptions())
+        // },
+        // onError() {},
+        async onSettled() { // перезапросит в любом случае, посте ошибки тоже
+            await queryClient.invalidateQueries({ queryKey: [todosApi.baseKey] })
+            // queryClient.invalidateQueries(todosApi.getTodoListQueryOptions())
+        }
     });
     
     const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        const text = String(formData.get("text"));
+        const text = formData.get("text");
         
-        createTodoMutation.mutate({
-            id: nanoid(),
-            done: false,
-            text,
-            userId: 1,
-        }, {
-            onSuccess() {
-                queryClient.invalidateQueries({
-                    queryKey: [todosApi.baseKey],
-                });
-            }
-        });
+        if (text) {
+            createTodoMutation.mutate({
+                id: nanoid(),
+                done: false,
+                text: String(text).trim(),
+                userId: 1,
+            });
+        }
         
         e.currentTarget.reset();
     };
     
     return {
         handleCreate,
+        isNewTodoPending: createTodoMutation.isPending,
     }
 }
