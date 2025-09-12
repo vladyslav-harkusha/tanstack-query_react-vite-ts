@@ -11,10 +11,22 @@ class ApiError extends Error {
 
 export const jsonApiInstance = async <T>(
     url: string,
-    init?: RequestInit
+    init?: RequestInit & { json?: unknown }
 ): Promise<T> => {
+    let headers = init?.headers || {};
+    
+    if (init?.json) {
+        headers = {
+            ...headers,
+            'Content-Type': 'application/json',
+        };
+        
+        init.body = JSON.stringify(init.json);
+    }
+    
     const result = await fetch(`${BASE_URL}${url}`, {
         ...init,
+        headers,
     });
     
     if (!result.ok) {

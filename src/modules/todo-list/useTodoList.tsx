@@ -1,8 +1,17 @@
-import {useInfiniteQuery} from "@tanstack/react-query";
+import {useInfiniteQuery, useQuery} from "@tanstack/react-query";
 import {todosApi} from "../../shared/api/todos.ts";
 import {useCallback, useRef} from "react";
 
 export function useTodoList() {
+    const { data: todoResponse, error, isLoading, refetch } = useQuery({
+        ...todosApi.getTodoListQueryOptions(),
+        select: data => data.toReversed(),
+    });
+    
+    return {error, todoResponse, isLoading, refetch };
+}
+
+export function useTodoListInfinite() {
     const {
         data: todoResponse,
         error,

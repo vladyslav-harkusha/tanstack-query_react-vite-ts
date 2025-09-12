@@ -17,9 +17,12 @@ type TodoDTO = {
     id: string;
     text: string;
     done: boolean;
+    userId: number;
 };
 
 export const todosApi = {
+    baseKey: "tasks",
+    
     getTodoList: async (
         {page, perPage}: {page: Number, perPage?: Number},
         {signal}: {signal: AbortSignal},
@@ -29,9 +32,19 @@ export const todosApi = {
         );
     },
     
+    getTodoListQueryOptions: () => {
+        return queryOptions({
+            queryKey: [todosApi.baseKey, 'list'],
+            // queryFn: (meta) => todosApi.getTodoList({ page }, meta),
+            queryFn: (meta) => jsonApiInstance<TodoDTO[]>(
+                `/tasks`,
+                { signal: meta.signal },
+            ),
+        });
+    },
     getTodoListPaginateQueryOptions: ({page, perPage}: {page: number, perPage: number}) => {
         return queryOptions({
-            queryKey: ['tasks', 'list', { page, perPage }],
+            queryKey: [todosApi.baseKey, 'list', { page, perPage }],
             // queryFn: (meta) => todosApi.getTodoList({ page }, meta),
             queryFn: (meta) => jsonApiInstance<PaginatedResult<TodoDTO>>(
                 `/tasks?_page=${page}&_per_page=${perPage}`,
@@ -42,7 +55,7 @@ export const todosApi = {
     
     getTodoListInfinityQueryOptions: () => {
         return infiniteQueryOptions({
-            queryKey: ['tasks', 'list'],
+            queryKey: [todosApi.baseKey, 'list'],
             queryFn: (meta) => jsonApiInstance<PaginatedResult<TodoDTO>>(
                 `/tasks?_page=${meta.pageParam}&_per_page=10`,
                 { signal: meta.signal },
@@ -50,6 +63,26 @@ export const todosApi = {
             initialPageParam: 1,
             getNextPageParam: (result) => result.next,
             select: result => result.pages.flatMap(page => page.data)
+        });
+    },
+    
+    createTodo: (data: TodoDTO) => {
+        return jsonApiInstance<TodoDTO>(`/tasks`, {
+            method: 'POST',
+            json: data,
+        });
+    },
+    
+    updateTodo: (todoId: string, data: Partial<TodoDTO>) => {
+        return jsonApiInstance<TodoDTO>(`/tasks/${todoId}`, {
+            method: 'PATCH',
+            json: data,
+        });
+    },
+    
+    deleteTodo: (todoId: string) => {
+        return jsonApiInstance<void>(`/tasks/${todoId}`, {
+            method: 'DELETE',
         });
     },
 }
