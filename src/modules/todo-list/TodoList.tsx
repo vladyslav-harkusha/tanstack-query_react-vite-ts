@@ -1,9 +1,11 @@
 import {useTodoList} from "./useTodoList.tsx";
 import {useCreateTodo} from "./useCreateTodo.tsx";
+import {useDeleteTodo} from "./useDeleteTodo.tsx";
 
 export function TodoList() {
     const { error, isLoading, todoResponse } = useTodoList();
     const { handleCreate, isNewTodoPending } = useCreateTodo();
+    const { handleDelete, getIsPending } = useDeleteTodo();
     
     if (isLoading) {
         return <div>Loading...</div>
@@ -14,7 +16,7 @@ export function TodoList() {
     }
     
     return (
-        <div className="p-5 mx-auto mt-10 max-w-[500px]">
+        <div className="p-5 mx-auto mt-10 max-w-[700px]">
             <h2 className="text-gray-600 text-2xl font-bold underline mb-5">Todo List</h2>
             
             <form onSubmit={handleCreate} className="flex gap-2 mb-5">
@@ -29,8 +31,18 @@ export function TodoList() {
             
             <ul className={"flex flex-col gap-4"}>
                 {todoResponse?.map(({ id, text, done }) => (
-                    <li key={id} className="border border-slate-300 rounded p-3 text-slate-600">
+                    <li
+                        key={id}
+                        className="flex justify-between items-center border border-slate-300 rounded p-3 text-slate-600"
+                    >
                         <p>{id}: --- {text} --- {done ? "done" : "to do"}</p>
+                        <button
+                            onClick={() => handleDelete(id)}
+                            className="border-2 border-orange-400 text-rose-600 font-bold rounded p-2 cursor-pointer hover:bg-red-200 transition duration-300 disabled:opacity-50"
+                            disabled={getIsPending(id)}
+                        >
+                            Delete
+                        </button>
                     </li>
                 ))}
             </ul>
