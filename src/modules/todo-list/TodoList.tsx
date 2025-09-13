@@ -1,11 +1,13 @@
 import {useTodoList} from "./useTodoList.tsx";
 import {useCreateTodo} from "./useCreateTodo.tsx";
 import {useDeleteTodo} from "./useDeleteTodo.tsx";
+import {useUpdateTodo} from "./useUpdateTodo.tsx";
 
 export function TodoList() {
     const { error, isLoading, todoResponse } = useTodoList();
     const { handleCreate, isNewTodoPending } = useCreateTodo();
     const { handleDelete, getIsPending } = useDeleteTodo();
+    const { toggleTodo } = useUpdateTodo();
     
     if (isLoading) {
         return <div>Loading...</div>
@@ -35,7 +37,10 @@ export function TodoList() {
                         key={id}
                         className="flex justify-between items-center border border-slate-300 rounded p-3 text-slate-600"
                     >
+                        <input type="checkbox" checked={done} onChange={() => toggleTodo(id, done)} />
+                        
                         <p>{id}: --- {text} --- {done ? "done" : "to do"}</p>
+                        
                         <button
                             onClick={() => handleDelete(id)}
                             className="border-2 border-orange-400 text-rose-600 font-bold rounded p-2 cursor-pointer hover:bg-red-200 transition duration-300 disabled:opacity-50"

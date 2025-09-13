@@ -14,7 +14,7 @@ export function useCreateTodo() {
         // onError() {},
         async onSettled() { // перезапросит в любом случае, посте ошибки тоже
             await queryClient.invalidateQueries({ queryKey: [todosApi.baseKey] })
-            // queryClient.invalidateQueries(todosApi.getTodoListQueryOptions())
+            // await queryClient.invalidateQueries(todosApi.getTodoListQueryOptions())
         }
     });
     

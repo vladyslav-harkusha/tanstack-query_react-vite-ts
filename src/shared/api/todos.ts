@@ -73,8 +73,8 @@ export const todosApi = {
         });
     },
     
-    updateTodo: (todoId: string, data: Partial<TodoDTO>) => {
-        return jsonApiInstance<TodoDTO>(`/tasks/${todoId}`, {
+    updateTodo: (data: Partial<TodoDTO> & { id: string }) => {
+        return jsonApiInstance<TodoDTO>(`/tasks/${data.id}`, {
             method: 'PATCH',
             json: data,
         });

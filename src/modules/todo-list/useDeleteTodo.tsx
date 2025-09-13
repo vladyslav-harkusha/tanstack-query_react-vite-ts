@@ -10,13 +10,10 @@ export function useDeleteTodo() {
             queryClient.invalidateQueries({ queryKey: [todosApi.baseKey] })
         },
         async onSuccess(_, deletedId) {
-            const todos = queryClient.getQueryData(todosApi.getTodoListQueryOptions().queryKey);
-            if (todos) {
-                queryClient.setQueryData(
-                    todosApi.getTodoListQueryOptions().queryKey,
-                    todos.filter(todo => todo.id !== deletedId)
-                );
-            }
+            queryClient.setQueryData(
+                todosApi.getTodoListQueryOptions().queryKey,
+                todos => todos?.filter(todo => todo.id !== deletedId)
+            );
         }
     });
     
